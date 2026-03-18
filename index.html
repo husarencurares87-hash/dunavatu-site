@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="UTF-8">
+<title>Probleme Dunavățu de Jos</title>
+
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+
+<style>
+body { font-family: Arial; background:#f4f4f4; }
+header { background:#2c7a7b; color:white; padding:20px; text-align:center; }
+.container { padding:20px; }
+.card { background:white; padding:10px; margin:10px 0; border-radius:8px; }
+input, textarea { width:100%; padding:10px; margin:5px 0; }
+button { background:#2c7a7b; color:white; padding:10px; border:none; cursor:pointer; }
+</style>
+</head>
+
+<body>
+
+<header>
+<h1>Probleme Dunavățu de Jos</h1>
+<p>Raportează probleme din comunitate</p>
+</header>
+
+<div class="container">
+
+<h2>📋 Probleme raportate</h2>
+<div id="lista"></div>
+
+<h2>➕ Adaugă o problemă</h2>
+<input id="titlu" placeholder="Titlu">
+<textarea id="descriere" placeholder="Descriere"></textarea>
+<button onclick="adauga()">Trimite</button>
+
+</div>
+
+<script>
+
+// CONFIG FIREBASE (o completăm după)
+const firebaseConfig = {
+  apiKey: "AICI",
+  authDomain: "AICI",
+  databaseURL: "AICI",
+  projectId: "AICI",
+};
+
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+
+function afiseaza() {
+  db.ref("probleme").on("value", snapshot => {
+    let lista = document.getElementById("lista");
+    lista.innerHTML = "";
+    snapshot.forEach(child => {
+      let p = child.val();
+      lista.innerHTML += `
+        <div class="card">
+          <h3>${p.titlu}</h3>
+          <p>${p.descriere}</p>
+        </div>
+      `;
+    });
+  });
+}
+
+function adauga() {
+  let titlu = document.getElementById("titlu").value;
+  let descriere = document.getElementById("descriere").value;
+
+  if (!titlu || !descriere) {
+    alert("Completează!");
+    return;
+  }
+
+  db.ref("probleme").push({ titlu, descriere });
+
+  document.getElementById("titlu").value = "";
+  document.getElementById("descriere").value = "";
+}
+
+afiseaza();
+
+</script>
+
+</body>
+</html>
